@@ -1,36 +1,57 @@
+# Core scientific stack
 numpy==1.23.0
 scikit-learn
 scipy
 pandas
 matplotlib
-nltk
-spacy
-tqdm
-unidecode
-fvcore
-lxml
-psutil
 Pillow==8.4.0
-requests
+opencv-python
+opencv-contrib-python
+pycocotools
+fvcore
+
+# Config / parsing
+PyYAML
+lxml
 beautifulsoup4
 tldextract
-gdown
+unidecode
+editdistance
+
+# NLP (used by PhishIntention utilities)
+nltk
+spacy
+
+# Web automation
 selenium
 selenium-wire
 helium
 webdriver-manager
+requests
+
+# Web service (optional helpers)
 flask
 flask-cors
-google-cloud-vision
-googletrans
-editdistance
+
+# Networking / crypto pins required by selenium-wire
 cryptography==38.0.4
 httpcore==0.15.0
 h11
 h2
 blinker==1.7.0
 hyperframe
-pycocotools
-opencv-python
-opencv-contrib-python
-openai
+
+# Cloud / translation utilities
+google-cloud-vision
+googletrans
+
+# LLM / VLM backend (v1 SDK exposes the `OpenAI` client used in scripts/pipeline/phishvlm.py)
+openai>=1.13.0
+
+# Misc
+tqdm
+psutil
+gdown
+
+# NOTE: PyTorch, torchvision, torchaudio and detectron2 are installed separately
+# because they must match your CUDA version. See the Setup section in README.md.

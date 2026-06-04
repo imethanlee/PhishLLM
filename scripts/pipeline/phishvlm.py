@@ -16,11 +16,17 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 urllib3.disable_warnings()
 http = urllib3.PoolManager(maxsize=10)  # Increase the maxsize to a larger value, e.g., 10
 
-os.environ['OPENAI_API_KEY'] = open('./datasets/openai_key.txt').read().strip()
+_OPENAI_KEY_PATH = './datasets/openai_key.txt'
+if not os.path.exists(_OPENAI_KEY_PATH):
+    raise FileNotFoundError(
+        f"OpenAI API key file not found at '{_OPENAI_KEY_PATH}'. "
+        "Create it and paste your key inside (see the Setup section of README.md)."
+    )
+os.environ['OPENAI_API_KEY'] = open(_OPENAI_KEY_PATH).read().strip()
 os.environ['CURL_CA_BUNDLE'] = ''
 
 
-class TestVLM():
+class PhishVLM():
 
     def __init__(
             self,
