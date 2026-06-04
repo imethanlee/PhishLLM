@@ -212,7 +212,11 @@ def query2image(
     if data.get('error', {}).get('code') == 429:
         raise RuntimeError("Google search exceeds quota limit")
 
-    returned_urls = [item.get("image")["thumbnailLink"] for item in data.get("items", [])]
+    returned_urls = [
+        item["image"]["thumbnailLink"]
+        for item in data.get("items", [])
+        if isinstance(item.get("image"), dict) and item["image"].get("thumbnailLink")
+    ]
 
     return returned_urls
 

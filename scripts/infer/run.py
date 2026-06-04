@@ -1,21 +1,26 @@
-from datetime import datetime, date, timedelta
-from scripts.phishintention.configs import load_config
-from scripts.pipeline.test_llm import *
-from scripts.utils.PhishIntentionWrapper import LogoDetector, LogoEncoder, LayoutDetector
+import os
 import argparse
-from tqdm import tqdm
-import yaml
-import openai
 import logging
-from selenium.common.exceptions import *
-os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
+from datetime import date
+
+import yaml
+from tqdm import tqdm
+from selenium.common.exceptions import WebDriverException
+
+from scripts.phishintention.model_config import load_config
+from scripts.pipeline.phishvlm import PhishVLM
+from scripts.utils.PhishIntentionWrapper import LogoDetector, LogoEncoder, LayoutDetector
+from scripts.utils.web_utils import boot_driver, restart_driver
+from scripts.utils.logger_utils import PhishLLMLogger
+
 os.environ['OPENAI_API_KEY'] = open('./datasets/openai_key.txt').read().strip()
 logging.getLogger("httpcore").setLevel(logging.WARNING)
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--folder", default="./datasets/field_study/2023-09-02/")
+    parser = argparse.ArgumentParser(description="Run the PhishVLM phishing-detection pipeline over a folder of websites.")
+    parser.add_argument("--folder", default="./datasets/test_sites",
+                        help="Folder of websites to test (each subfolder holds shot.png / info.txt / html.txt).")
     parser.add_argument("--config", default='./param_dict.yaml', help="Config .yaml path")
     args = parser.parse_args()
 
@@ -31,13 +36,11 @@ if __name__ == '__main__':
     logo_encoder = LogoEncoder(SIAMESE_MODEL, OCR_MODEL, SIAMESE_THRE)
     layout_extractor = LayoutDetector(AWL_MODEL)
 
-    # PhishLLM
-    llm_cls = TestVLM(param_dict=param_dict,
-                      logo_encoder=logo_encoder,
-                      logo_extractor=logo_extractor,
-                      layout_extractor=layout_extractor)
-    openai.api_key = os.getenv("OPENAI_API_KEY")
-    openai.proxy   = os.getenv("http_proxy", "") # set openai proxy
+    # PhishVLM pipeline
+    llm_cls = PhishVLM(param_dict=param_dict,
+                       logo_encoder=logo_encoder,
+                       logo_extractor=logo_extractor,
+                       layout_extractor=layout_extractor)
 
     driver = boot_driver()
 
@@ -66,9 +69,8 @@ if __name__ == '__main__':
             continue
 
         try:
-            if len(open(info_path, encoding='ISO-8859-1').read()) > 0:
-                url = open(info_path, encoding='ISO-8859-1').read()
-            else:
+            url = open(info_path, encoding='ISO-8859-1').read().strip()
+            if not url:
                 url = 'https://' + folder
         except FileNotFoundError:
             url = 'https://' + folder

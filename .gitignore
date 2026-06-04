@@ -5,8 +5,18 @@ __pycache__/
 *.zip
 *.pkl
 *.pt
-./datasets/*
-./scripts/phishintention/models/*
+
+# Secrets — never commit API keys
+datasets/openai_key.txt
+datasets/google_api_key.txt
+
+# Downloaded model weights and large field-study data
+scripts/phishintention/models/
+datasets/field_study/
+
+# Per-run results
+*_phishllm.txt
+selenium-debug.log
 
 # C extensions
 *.so

@@ -59,6 +59,11 @@ else
   gdown --id "1qSdkSSoCYUkZMKs44Rup_1DPBxHnEKl1" -O "domain_map.pkl"
 fi
 
+error_exit() {
+  echo "[setup.sh][ERROR] $1" >&2
+  exit 1
+}
+
 # Extract and flatten expand_targetlist
 echo "Extracting expand_targetlist.zip..."
 unzip -o expand_targetlist.zip -d expand_targetlist

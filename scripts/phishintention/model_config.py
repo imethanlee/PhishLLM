@@ -1,10 +1,8 @@
-# Global configuration
-import subprocess
+# Model configuration: load detector / siamese / OCR weights from configs/configs.yaml
+import os
 import yaml
 from .modules.awl_detector import config_rcnn
-from .modules.logo_matching import siamese_model_config, ocr_model_config, cache_reference_list
-import os
-import numpy as np
+from .modules.logo_matching import siamese_model_config, ocr_model_config
 
 def get_absolute_path(relative_path):
     base_path = os.path.dirname(__file__)
